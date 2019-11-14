@@ -5,9 +5,15 @@
 ** 1) Fixer un calendrier avec m. Saurin
 ** 2) Un fichier avec les jalons
 
+** Matériel : EV3, 2 moteurs, capteur, chargeur de pîles
+
 
 * <07/11/2019>
-* Choix : un système de plugin ou partir de zéro. On choisit plugin.
-* À faire :
+** Choix : un système de plugin ou partir de zéro. On choisit plugin.
+** À faire :
   - Jalons
   - quel client mail ?
+
+* <14/11/2019>
+** Changement de projet : suiveur de ligne EV3
+* À Faire : OS + moteurs + apprentissage capteurs
