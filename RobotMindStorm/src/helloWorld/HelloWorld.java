@@ -7,7 +7,7 @@ public class HelloWorld
 {
 	public static void main(String[] args)
 	{
-		LCD.drawString("Hello World!!!", 0, 4);
+		LCD.drawString("Hello World!!!", 0, 2);
 		Delay.msDelay(10000);
 	}
 }
