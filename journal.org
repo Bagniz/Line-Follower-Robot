@@ -1,5 +1,5 @@
 * Matériel
-  EV3, 2 moteurs, capteur, chargeur de pîles, 3 cables
+  EV3, 2 moteurs, capteur, chargeur de pîles, 3 cables, tapis 4 couleurs
 
 
 * <24/10/2019>
@@ -9,7 +9,7 @@
 ** 1) Fixer un calendrier avec m. Saurin
 ** 2) Un fichier avec les jalons
 
-** Matériel : 
+** Matériel :
 
 * <07/11/2019>
 ** Choix : un système de plugin ou partir de zéro. On choisit plugin.
@@ -31,4 +31,10 @@
   Différentier les vitesses des moteurs
   Terminer l'apprentissage
   Monter le robot
-  
+
+* <28/11/2019>
+** Fait : construction robot + reco couleurs
+  - roue arrière tourne de droite à gauche
+** À faire :
+  - Meilleure roue arrière ?
+  - suiveur de ligne droite
