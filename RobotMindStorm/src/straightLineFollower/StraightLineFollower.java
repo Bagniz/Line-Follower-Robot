@@ -56,5 +56,10 @@ public class StraightLineFollower
 				largeRegulatedMotorDroit.stop();
 			}
 		}
+		
+		// Close the colorSensor and the motors
+		sampleProvider.close();
+		largeRegulatedMotorGauche.close();
+		largeRegulatedMotorDroit.close();
 	}
 }
