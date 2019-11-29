@@ -2,8 +2,8 @@ package colorRecognition;
 
 public class Color
 {
-	private String name;
-	private float[] values;
+	private String name; // The name of the colors
+	private float[] values; // RGB values of the color
 	
 	public Color(String name, float[] values) {
 		super();
