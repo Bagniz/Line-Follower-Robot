@@ -4,6 +4,9 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
+import lejos.hardware.Button;
+import lejos.hardware.Key;
+import lejos.hardware.KeyListener;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.remote.ev3.RMISampleProvider;
@@ -20,7 +23,6 @@ public class StraightLineFollower
 		// Get the connected EV3Brick and the colorSensor
 		RemoteEV3 ev3 = new RemoteEV3("10.0.1.1");
 		RMISampleProvider sampleProvider = ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "RGB");
-		
 		
 		// Get the motors left and right
 		EV3LargeRegulatedMotor largeRegulatedMotorGauche = new EV3LargeRegulatedMotor(MotorPort.A);
@@ -54,6 +56,7 @@ public class StraightLineFollower
 				// Stop the motors
 				largeRegulatedMotorGauche.stop();
 				largeRegulatedMotorDroit.stop();
+				break;
 			}
 		}
 		
