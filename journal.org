@@ -23,11 +23,11 @@
 
 * <21/11/2019>
 
-* DONE
+** DONE
   Installation du système, Hello world,
   Récupération du matériel
 
-* TODO
+** TODO
   Différentier les vitesses des moteurs
   Terminer l'apprentissage
   Monter le robot
@@ -38,3 +38,8 @@
 ** À faire :
   - Meilleure roue arrière ?
   - suiveur de ligne droite
+
+* <04/12/2019>
+
+** pb de connexion
+   remettre à jour le logiciel de l'ev3
