@@ -60,7 +60,7 @@ public class ColorRecognition
 		
 		// Get the connected EV3Brick and the colorSensor
 		RemoteEV3 ev3 = new RemoteEV3("10.0.1.1");
-		RMISampleProvider sampleProvider = ev3.createSampleProvider("S1", "lejos.hardware.sensor.EV3ColorSensor", "RGB");
+		RMISampleProvider sampleProvider = ev3.createSampleProvider("S4", "lejos.hardware.sensor.EV3ColorSensor", "RGB");
 		
 		// Learning
 		ArrayList<Color> colorsLearned = new ArrayList<>();
