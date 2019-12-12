@@ -43,3 +43,11 @@
 
 ** pb de connexion
    remettre à jour le logiciel de l'ev3
+
+
+* <12/12/2019>
+** Fait:
+*** Suiver de ligne driote
+** A Faire:
+*** Realiser un suiveur de ligne
+*** Les deux roues doivent toujours bouger
