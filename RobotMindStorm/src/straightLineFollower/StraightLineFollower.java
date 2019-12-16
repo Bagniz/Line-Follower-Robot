@@ -10,6 +10,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
+import lejos.utility.Delay;
 
 public class StraightLineFollower
 {
@@ -27,8 +28,8 @@ public class StraightLineFollower
 		EV3LargeRegulatedMotor largeRegulatedMotorDroit = new EV3LargeRegulatedMotor(MotorPort.D);
 		
 		// Set the speed of the motors
-		largeRegulatedMotorGauche.setSpeed(400);
-		largeRegulatedMotorDroit.setSpeed(400);
+		largeRegulatedMotorGauche.setSpeed(100);
+		largeRegulatedMotorDroit.setSpeed(100);
 		
 		// Learn the colors
 		Color.learnColors();
@@ -52,18 +53,27 @@ public class StraightLineFollower
 			LCD.drawString(detectedColor, 0, 1);
 			
 			// If the detected color is green
-			if(detectedColor.equals(Color.colorsLearned.get(5).getName()))
+			if(detectedColor.equals(Color.colorsLearned.get(2).getName()))
 			{
-				// Make the motors move forward
-				largeRegulatedMotorGauche.forward();
-				largeRegulatedMotorDroit.forward();
+				largeRegulatedMotorGauche.setSpeed(100);
+				largeRegulatedMotorDroit.setSpeed(50);
+				
+				Delay.msDelay(500);
+				
+				largeRegulatedMotorDroit.setSpeed(100);
+				
 			}
 			else
 			{
 				// Stop the motors
-				largeRegulatedMotorGauche.stop(true);
-				largeRegulatedMotorDroit.stop(true);
+				//largeRegulatedMotorGauche.stop(true);
+				//largeRegulatedMotorDroit.stop(true);
+				largeRegulatedMotorGauche.setSpeed(50);
 			}
+			
+			// Make the motors move forward
+			largeRegulatedMotorGauche.forward();
+			largeRegulatedMotorDroit.forward();
 		}
 		
 		// Close the colorSensor and the motors
