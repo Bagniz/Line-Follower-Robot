@@ -52,8 +52,17 @@ public class StraightLineFollower
 			// Print the detected color
 			LCD.drawString(detectedColor, 0, 1);
 			
+			//Akram trying to make curved line follower
+			if(detectedColor.equals(Color.colorsLearned.get(2).getName())) {
+				largeRegulatedMotorGauche.setSpeed(100);
+				largeRegulatedMotorDroit.setSpeed(80);
+			}else {
+				largeRegulatedMotorGauche.setSpeed(80);
+				largeRegulatedMotorDroit.setSpeed(100);
+			}
+			
 			// If the detected color is green
-			if(detectedColor.equals(Color.colorsLearned.get(2).getName()))
+			/*if(detectedColor.equals(Color.colorsLearned.get(2).getName()))
 			{
 				largeRegulatedMotorGauche.setSpeed(100);
 				largeRegulatedMotorDroit.setSpeed(50);
@@ -69,7 +78,7 @@ public class StraightLineFollower
 				//largeRegulatedMotorGauche.stop(true);
 				//largeRegulatedMotorDroit.stop(true);
 				largeRegulatedMotorGauche.setSpeed(50);
-			}
+			}*/
 			
 			// Make the motors move forward
 			largeRegulatedMotorGauche.forward();
