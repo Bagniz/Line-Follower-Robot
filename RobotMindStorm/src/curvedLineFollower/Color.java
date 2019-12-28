@@ -1,4 +1,4 @@
-package straightLineFollower;
+package curvedLineFollower;
 
 import java.util.ArrayList;
 
@@ -79,17 +79,20 @@ public class Color
 	// Learn the colors
 	public static void learnColors()
 	{
-		float[] lightGreen = {17.32f, 50.20f, 6.27f};
 		float[] white = {61.74f, 63.75f, 35.39f};
 		float[] black = {2.26f, 2.51f, 1.25f};
+		colorsLearned.add(new Color("White", white));
+		colorsLearned.add(new Color("Black", black));
+		/*
+		float[] lightGreen = {17.32f, 50.20f, 6.27f};
 		float[] orange = {51.70f, 12.05f, 4.52f};
 		float[] brown = {12.90f, 8.03f, 3.26f};
 		float[] red = {51.45f, 14.56f, 4.77f};
-		colorsLearned.add(new Color("Light Green", lightGreen));
-		colorsLearned.add(new Color("White", white));
-		colorsLearned.add(new Color("Black", black));
+		colorsLearned.add(new Color("Green", lightGreen));
+		
 		colorsLearned.add(new Color("Orange", orange));
 		colorsLearned.add(new Color("Brown", brown));
 		colorsLearned.add(new Color("Red", red));
+		*/
 	}
 }
