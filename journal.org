@@ -51,3 +51,14 @@
 ** A Faire:
 *** Realiser un suiveur de ligne
 *** Les deux roues doivent toujours bouger
+
+* <20/01/2020>
+
+** Pas de matériel cette semaine revient la semaine prochaine
+
+** DONE
+   le robot suit une ligne dans un sens, mais pas dans l'autre
+
+** TODO
+   accélérer la ligne droite
+   tourner dans les deux sens
