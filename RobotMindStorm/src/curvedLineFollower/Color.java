@@ -2,78 +2,80 @@ package curvedLineFollower;
 
 import java.util.ArrayList;
 
-public class Color
-{
-	public static ArrayList<Color> colorsLearned = new ArrayList<Color>(); // Learned colors
-	private String name; // The name of the colors
-	private float[] values; // RGB values of the color
+public class Color {
+	// Attributes
+	private String name;
+	private float[] rgbColorValues;
+	public static ArrayList<Color> learnedColors = new ArrayList<Color>();
+	public final static String COLOR_BLACK = "Black";
+    public final static String COLOR_WHITE = "White";
+    public final static String COLOR_ORANGE = "Orange";
+    public final static String COLOR_LIGHT_GREEN = "Light Green";
+    public final static String COLOR_RED = "Red";
+    public final static String COLOR_BROWN = "Brown";
+    public final static String COLOR_OTHER = "Other";
 	
-	public Color(String name, float[] values)
-	{
+	public Color(String colorName, float[] rgbColorValues){
 		super();
-		this.name = name;
-		this.values = values;
+		this.name = colorName;
+		this.rgbColorValues = rgbColorValues;
 	}
 	
-	public String getName()
-	{
-		return name;
-	}
-	
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-	
-	public float[] getValues()
-	{
-		return values;
-	}
-	
-	public void setValues(float[] values)
-	{
-		this.values = values;
-	}
+	// Getters and Setters
+    public String getName(){
+        return this.name;
+    }
+
+    public void setName(String colorName){
+        this.name = colorName;
+    }
+
+    public float[] getRgbColorValues(){
+        return this.rgbColorValues;
+    }
+
+    public void setRgbColorValues(float[] rgbColorValues){
+        this.rgbColorValues = rgbColorValues;
+    }
 	
 	// Get the name of the detected color
-	public static String getColor(float[] captured)
+	public static String getColor(float[] capturedRGBValues)
 	{
 		// Variables
-		String color = "other";
+		String colorName = COLOR_OTHER;
 		double lowestDistance = 1000000;
 		
 		// Calculate the distance between 
 		// the detected color and 
 		// the colors that we learned
-		for(int i = 0; i < colorsLearned.size(); i++)
+		for(Color learnedColor : learnedColors)
 		{
 			// Calculate the distance
-			double distance = getDistance(captured, colorsLearned.get(i).getValues());
+			double calculatedDistance = getDistance(capturedRGBValues, learnedColor.rgbColorValues);
 			
 			// If the calculated distance is 
 			// lower then the lowestDistance
 			// then we update the lowestDistance
 			// and the name of the color
-			if(distance < lowestDistance)
+			if(calculatedDistance < lowestDistance)
 			{
-				lowestDistance = distance;
-				color = colorsLearned.get(i).getName();
+				lowestDistance = calculatedDistance;
+				colorName = learnedColor.getName();
 			}
 		}
 		
 		// Return the name of the color detected
-		return color;
+		return colorName;
 	}
 	
 	// Calculate the distance between 2 colors
-	public static double getDistance(float[] captured, float[] had)
+	public static double getDistance(float[] capturedRGBValues, float[] knownRGBValues)
 	{
-		double x = Math.pow(captured[0] - had[0], 2);
-		double y = Math.pow(captured[1] - had[1], 2);
-		double z = Math.pow(captured[2] - had[2], 2);
+		double x = Math.pow(capturedRGBValues[0] - knownRGBValues[0], 2);
+		double y = Math.pow(capturedRGBValues[1] - knownRGBValues[1], 2);
+		double z = Math.pow(capturedRGBValues[2] - knownRGBValues[2], 2);
 		
-		double distance = Math.sqrt(x+y+z);
-		return distance;
+		return Math.sqrt(x+y+z);
 	}
 	
 	// Learn the colors
@@ -81,18 +83,19 @@ public class Color
 	{
 		float[] white = {61.74f, 63.75f, 35.39f};
 		float[] black = {2.26f, 2.51f, 1.25f};
-		colorsLearned.add(new Color("White", white));
-		colorsLearned.add(new Color("Black", black));
 		/*
 		float[] lightGreen = {17.32f, 50.20f, 6.27f};
 		float[] orange = {51.70f, 12.05f, 4.52f};
 		float[] brown = {12.90f, 8.03f, 3.26f};
 		float[] red = {51.45f, 14.56f, 4.77f};
-		colorsLearned.add(new Color("Green", lightGreen));
-		
-		colorsLearned.add(new Color("Orange", orange));
-		colorsLearned.add(new Color("Brown", brown));
-		colorsLearned.add(new Color("Red", red));
+		*/
+		learnedColors.add(new Color(COLOR_WHITE, white));
+		learnedColors.add(new Color(COLOR_BLACK, black));
+		/*
+		learnedColors.add(new Color(COLOR_LIGHT_GREEN, lightGreen));
+		learnedColors.add(new Color(COLOR_ORANGE, orange));
+		learnedColors.add(new Color(COLOR_BROWN, brown));
+		learnedColors.add(new Color(COLOR_RED, red));
 		*/
 	}
 }
