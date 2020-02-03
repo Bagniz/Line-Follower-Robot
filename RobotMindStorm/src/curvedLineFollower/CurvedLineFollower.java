@@ -43,13 +43,12 @@ public class CurvedLineFollower
 	
 	public void lookForLine() throws RemoteException, MalformedURLException, NotBoundException {
 		sampleRGBValue = new float[3];
-		Boolean turnDebut=true;
-		long timeToTurn=500,time=System.currentTimeMillis(),tStart=time,turnTime=600,turnTimeStart=time;
-		int i=0,motorSpeed=200;
+		Boolean turnDebut = true;
+		long timeToTurn = 500, time = System.currentTimeMillis(), tStart = time, turnTime = 600, turnTimeStart = time;
+		int i=0,motorSpeed = 200;
 		String detectedColorName;
 		// While the brick is detecting
-		while(Button.ESCAPE.isUp())
-		{
+		while(Button.ESCAPE.isUp()) {
 			// Detect a color and get the RGB values
 			this.sampleRGBValue = sampleProvider.fetchSample();
 			this.sampleRGBValue[0] = this.sampleRGBValue[0] * 256f;
@@ -66,27 +65,31 @@ public class CurvedLineFollower
 				largeRegulatedMotorDroit.stop(true);
 				largeRegulatedMotorGauche.stop(true);
 				break;
-			}else {
-				time=System.currentTimeMillis();
+			}
+			else {
+				time = System.currentTimeMillis();
 				
-				if(time-tStart>timeToTurn) {
+				if(time-tStart > timeToTurn) {
 					if(turnDebut) {
-						turnTimeStart=time;
-						turnDebut=false;
+						turnTimeStart = time;
+						turnDebut = false;
 					}
-					if(time-turnTimeStart<turnTime) {
+					
+					if(time-turnTimeStart < turnTime) {
 						largeRegulatedMotorGauche.setSpeed(0);
 						largeRegulatedMotorDroit.setSpeed(motorSpeed);
-					}else {
+					}
+					else {
 						tStart=time;
 						i++;
-						if(i==4) {
-							timeToTurn*=2;
-							i=0;
+						if(i == 4) {
+							timeToTurn *= 2;
+							i = 0;
 						}
-						turnDebut=true;
+						turnDebut = true;
 					}
-				}else {
+				}
+				else {
 					largeRegulatedMotorGauche.setSpeed(motorSpeed);
 					largeRegulatedMotorDroit.setSpeed(motorSpeed);
 					
@@ -95,22 +98,27 @@ public class CurvedLineFollower
 				largeRegulatedMotorDroit.forward();
 			}
 		}
-		Boolean gTry=false,dTry=!gTry;
+		
+		Boolean tryLeft=false,tryRight =!tryLeft;
 		for (int j = 0; j < 2;j++) {
-			if(gTry) {
+			if(tryLeft) {
 				largeRegulatedMotorGauche.setSpeed(motorSpeed/4);
 				largeRegulatedMotorGauche.backward();
-			}else {
+			}
+			else {
 				largeRegulatedMotorGauche.setSpeed(motorSpeed);
 				largeRegulatedMotorGauche.forward();
 			}
-			if(dTry) {
+			
+			if(tryRight ) {
 				largeRegulatedMotorDroit.setSpeed(motorSpeed/4);
 				largeRegulatedMotorDroit.backward(); 
-			}else {
+			}
+			else {
 				largeRegulatedMotorDroit.setSpeed(motorSpeed);
 				largeRegulatedMotorDroit.forward();
 			}
+			
 			Delay.msDelay(500);
 			largeRegulatedMotorGauche.stop(true);
 			largeRegulatedMotorDroit.stop(true);
@@ -119,18 +127,24 @@ public class CurvedLineFollower
 			this.sampleRGBValue[1] = this.sampleRGBValue[1]*256f;
 			this.sampleRGBValue[2] = this.sampleRGBValue[2]*256f;
 			detectedColorName = Color.getColor(this.sampleRGBValue);
-			if(detectedColorName.equals(Color.learnedColors.get(1).getName())) break;
-			if(gTry) {
+			
+			if(detectedColorName.equals(Color.learnedColors.get(1).getName()))
+				break;
+			
+			if(tryLeft) {
 				largeRegulatedMotorGauche.setSpeed(motorSpeed);
 				largeRegulatedMotorGauche.forward(); 	
-			}else {
+			}
+			else {
 				largeRegulatedMotorGauche.setSpeed(motorSpeed/4);
 				largeRegulatedMotorGauche.backward();
 			}
-			if(dTry) {
+			
+			if(tryRight ) {
 				largeRegulatedMotorDroit.setSpeed(motorSpeed);
 				largeRegulatedMotorDroit.forward(); 
-			}else {
+			}
+			else {
 				largeRegulatedMotorDroit.setSpeed(motorSpeed/4);
 				largeRegulatedMotorDroit.backward();
 			}
@@ -138,12 +152,13 @@ public class CurvedLineFollower
 			largeRegulatedMotorGauche.stop(true);
 			largeRegulatedMotorDroit.stop(true);
 			
-			gTry=!gTry;
-			dTry=!dTry;
+			tryLeft = !tryLeft;
+			tryRight = !tryRight ;
 		}
 	}
-	public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException
-	{
+	
+	public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException {
+		// Instantiate the Brick
 		CurvedLineFollower curvedLineFollower = new CurvedLineFollower();
 		
 		// Learn the colors
@@ -152,12 +167,13 @@ public class CurvedLineFollower
 		// Click enter to start following
 		Button.ENTER.waitForPressAndRelease();
 		
+		// Search for the line
 		curvedLineFollower.lookForLine();
 		
-		long tBlack=0,tWhite=0;
+		long timeInBlack = 0,timeInWhite = 0;
+		
 		// While the brick is detecting
-		while(Button.ESCAPE.isUp())
-		{
+		while(Button.ESCAPE.isUp()) {
 			// Detect a color and get the RGB values
 			curvedLineFollower.sampleRGBValue = curvedLineFollower.sampleProvider.fetchSample();
 			curvedLineFollower.sampleRGBValue[0] = curvedLineFollower.sampleRGBValue[0]*256f;
@@ -171,28 +187,30 @@ public class CurvedLineFollower
 			LCD.drawString(detectedColor, 0, 1);
 			
 			if(detectedColor.equals(Color.COLOR_BLACK)) {
-				if(tBlack==0)
-					tBlack=System.currentTimeMillis();
-				else if((System.currentTimeMillis()-tBlack)>500) {
-					curvedLineFollower.motorSpeed=300;
-				}else if((System.currentTimeMillis()-tBlack)>200) {
-					curvedLineFollower.motorSpeed=400;
+				if(timeInBlack == 0)
+					timeInBlack=System.currentTimeMillis();
+				else if((System.currentTimeMillis() - timeInBlack) > 500) {
+					curvedLineFollower.motorSpeed = 300;
+				}else if((System.currentTimeMillis() - timeInBlack) > 200) {
+					curvedLineFollower.motorSpeed = 400;
 				}else {
-					curvedLineFollower.motorSpeed=500;
+					curvedLineFollower.motorSpeed = 500;
 				}
-				tWhite=0;
+				timeInWhite = 0;
 				curvedLineFollower.largeRegulatedMotorGauche.setSpeed(curvedLineFollower.motorSpeed);
 				curvedLineFollower.largeRegulatedMotorDroit.setSpeed((float) 0.35 * curvedLineFollower.motorSpeed);
-			}else {
-				if(tWhite==0)
-					tWhite=System.currentTimeMillis();
-				else if((System.currentTimeMillis()-tWhite)>1500 && tWhite!=0 ) {
+			}
+			else {
+				if(timeInWhite == 0)
+					
+					timeInWhite = System.currentTimeMillis();
+				else if((System.currentTimeMillis() - timeInWhite) > 1500 && timeInWhite != 0 ) {
 					curvedLineFollower.largeRegulatedMotorDroit.stop();
 					curvedLineFollower.largeRegulatedMotorDroit.stop();
 					curvedLineFollower.lookForLine();
-					tWhite=0;
+					timeInWhite = 0;
 				}
-				tBlack=0;
+				timeInBlack = 0;
 				
 				curvedLineFollower.largeRegulatedMotorGauche.setSpeed((float) 0.35 * curvedLineFollower.motorSpeed);
 				curvedLineFollower.largeRegulatedMotorDroit.setSpeed(curvedLineFollower.motorSpeed);
