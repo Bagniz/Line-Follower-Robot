@@ -62,3 +62,12 @@
 ** TODO
    accélérer la ligne droite
    tourner dans les deux sens
+* <11/02/2020>
+
+** DONE
+   condition de retour sur la ligne dépend de la position précédente
+
+** TODO
+   suivre la ligne gauche en regardant le % de ligne verte/blanche
+
+
