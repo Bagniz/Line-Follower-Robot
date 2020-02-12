@@ -82,17 +82,17 @@ public class Color {
 	public static void learnColors()
 	{
 		float[] white = {61.74f, 63.75f, 35.39f};
-		float[] black = {2.26f, 2.51f, 1.25f};
-		/*
 		float[] lightGreen = {17.32f, 50.20f, 6.27f};
+		/*
 		float[] orange = {51.70f, 12.05f, 4.52f};
+		float[] black = {2.26f, 2.51f, 1.25f};
 		float[] brown = {12.90f, 8.03f, 3.26f};
 		float[] red = {51.45f, 14.56f, 4.77f};
 		*/
 		learnedColors.add(new Color(COLOR_WHITE, white));
-		learnedColors.add(new Color(COLOR_BLACK, black));
-		/*
 		learnedColors.add(new Color(COLOR_LIGHT_GREEN, lightGreen));
+		/*
+		learnedColors.add(new Color(COLOR_BLACK, black));
 		learnedColors.add(new Color(COLOR_ORANGE, orange));
 		learnedColors.add(new Color(COLOR_BROWN, brown));
 		learnedColors.add(new Color(COLOR_RED, red));

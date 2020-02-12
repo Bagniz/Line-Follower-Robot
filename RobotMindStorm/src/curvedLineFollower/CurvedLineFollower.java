@@ -61,7 +61,7 @@ public class CurvedLineFollower
 			// Print the detected color
 			LCD.drawString(detectedColorName, 0, 1);
 					
-			if(detectedColorName.equals(Color.COLOR_BLACK)) {
+			if(detectedColorName.equals(Color.COLOR_LIGHT_GREEN)) {
 				largeRegulatedMotorDroit.stop(true);
 				largeRegulatedMotorGauche.stop(true);
 				break;
@@ -186,7 +186,7 @@ public class CurvedLineFollower
 			// Print the detected color
 			LCD.drawString(detectedColor, 0, 1);
 			
-			if(detectedColor.equals(Color.COLOR_BLACK)) {
+			if(detectedColor.equals(Color.COLOR_LIGHT_GREEN)) {
 				if(timeInBlack == 0)
 					timeInBlack=System.currentTimeMillis();
 				else if((System.currentTimeMillis() - timeInBlack) > 500) {
