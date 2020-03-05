@@ -71,3 +71,12 @@
    suivre la ligne gauche en regardant le % de ligne verte/blanche
 
 
+
+* <25/02/2020>
+** Fait:
+   - Un robot qui bouge
+** à faire:
+   - Compredre pourquoi quand le robot cherche la ligne il ne la voit pas.
+   - lire
+     https://padlet.com/diderotpournosretraites/j413cz0jqfk7
+     https://universiteouverte.org/2020/02/13/le-5-mars-saffiche-partout/
