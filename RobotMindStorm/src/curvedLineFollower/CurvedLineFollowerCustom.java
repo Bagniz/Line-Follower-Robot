@@ -107,7 +107,7 @@ public class CurvedLineFollowerCustom {
 		return false;
 	}
 	
-	void lookForLine() throws RemoteException {
+	void lookForLine(CurvedLineFollowerCustom curvedLineFollower) throws RemoteException {
 		// Variables
 		long timeTurning = 0;
 		int timeToSpeeUp = 3000;
@@ -125,6 +125,16 @@ public class CurvedLineFollowerCustom {
 		distanceToAvoid = Color.getDistance(sampleRGBValue, colorToAvoid.getRgbColorValues());
 		
 		while(Button.ESCAPE.isUp()) {
+			// Detect a color and get the RGB values
+			curvedLineFollower.sampleRGBValue = curvedLineFollower.sampleProvider.fetchSample();
+			curvedLineFollower.sampleRGBValue[0] = curvedLineFollower.sampleRGBValue[0]*256f;
+			curvedLineFollower.sampleRGBValue[1] = curvedLineFollower.sampleRGBValue[1]*256f;
+			curvedLineFollower.sampleRGBValue[2] = curvedLineFollower.sampleRGBValue[2]*256f;
+			
+			// Calculate the distance
+			ditanceToFollow = Color.getDistance(curvedLineFollower.sampleRGBValue, curvedLineFollower.colorToFollow.getRgbColorValues());
+			distanceToAvoid = Color.getDistance(curvedLineFollower.sampleRGBValue, curvedLineFollower.colorToAvoid.getRgbColorValues());
+			
 			// Is is follow turn left
 			if(ditanceToFollow > distanceToAvoid) {
 				if(timeTurning == 0)
@@ -197,7 +207,7 @@ public class CurvedLineFollowerCustom {
 				// If time is big than we search for line
 				if(System.currentTimeMillis() - timeInAvoidColor > 3000) {
 					timeInAvoidColor = 0;
-					curvedLineFollower.lookForLine();
+					curvedLineFollower.lookForLine(curvedLineFollower);
 				}
 			}
 			
