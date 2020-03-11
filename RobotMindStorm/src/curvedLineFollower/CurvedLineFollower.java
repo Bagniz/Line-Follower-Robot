@@ -127,6 +127,7 @@ public class CurvedLineFollower
 			detectedColorName = Color.getColor(this.sampleRGBValue);
 			
 			if(detectedColorName.equals(Color.toAvoid.getName())) {
+				Delay.msDelay(300);
 				largeRegulatedMotorGauche.stop(true);
 				largeRegulatedMotorDroit.stop(true);
 				return;
