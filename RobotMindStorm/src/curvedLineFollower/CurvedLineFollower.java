@@ -61,7 +61,7 @@ public class CurvedLineFollower
 			// Print the detected color
 			LCD.drawString(detectedColorName, 0, 1);
 					
-			if(detectedColorName.equals(Color.COLOR_LIGHT_GREEN)) {
+			if(detectedColorName.equals(Color.toFollow.getName())) {
 				largeRegulatedMotorDroit.stop(true);
 				largeRegulatedMotorGauche.stop(true);
 				break;
@@ -100,9 +100,10 @@ public class CurvedLineFollower
 		}
 		
 		Boolean tryLeft=false,tryRight =!tryLeft;
-		for (int j = 0; j < 2;j++) {
+		//for (int j = 0; j < 2;j++) {
+		while(Button.ESCAPE.isUp()) {	
 			if(tryLeft) {
-				largeRegulatedMotorGauche.setSpeed(motorSpeed/4);
+				largeRegulatedMotorGauche.setSpeed(motorSpeed);
 				largeRegulatedMotorGauche.backward();
 			}
 			else {
@@ -111,50 +112,51 @@ public class CurvedLineFollower
 			}
 			
 			if(tryRight ) {
-				largeRegulatedMotorDroit.setSpeed(motorSpeed/4);
+				largeRegulatedMotorDroit.setSpeed(motorSpeed);
 				largeRegulatedMotorDroit.backward(); 
 			}
 			else {
 				largeRegulatedMotorDroit.setSpeed(motorSpeed);
 				largeRegulatedMotorDroit.forward();
 			}
-			
-			Delay.msDelay(500);
-			largeRegulatedMotorGauche.stop(true);
-			largeRegulatedMotorDroit.stop(true);
+			//Delay.msDelay(900);
 			this.sampleRGBValue = sampleProvider.fetchSample();
 			this.sampleRGBValue[0] = this.sampleRGBValue[0]*256f;
 			this.sampleRGBValue[1] = this.sampleRGBValue[1]*256f;
 			this.sampleRGBValue[2] = this.sampleRGBValue[2]*256f;
 			detectedColorName = Color.getColor(this.sampleRGBValue);
 			
-			if(detectedColorName.equals(Color.learnedColors.get(1).getName()))
-				break;
-			
+			if(detectedColorName.equals(Color.toAvoid.getName())) {
+				largeRegulatedMotorGauche.stop(true);
+				largeRegulatedMotorDroit.stop(true);
+				return;
+			}
+		}
+			/*
 			if(tryLeft) {
-				largeRegulatedMotorGauche.setSpeed(motorSpeed);
+				largeRegulatedMotorGauche.setSpeed(motorSpeed/5);
 				largeRegulatedMotorGauche.forward(); 	
 			}
 			else {
-				largeRegulatedMotorGauche.setSpeed(motorSpeed/4);
+				largeRegulatedMotorGauche.setSpeed(motorSpeed);
 				largeRegulatedMotorGauche.backward();
 			}
 			
 			if(tryRight ) {
-				largeRegulatedMotorDroit.setSpeed(motorSpeed);
+				largeRegulatedMotorDroit.setSpeed(motorSpeed/5);
 				largeRegulatedMotorDroit.forward(); 
 			}
 			else {
-				largeRegulatedMotorDroit.setSpeed(motorSpeed/4);
+				largeRegulatedMotorDroit.setSpeed(motorSpeed);
 				largeRegulatedMotorDroit.backward();
 			}
-			Delay.msDelay(500);
+			Delay.msDelay(1000);
 			largeRegulatedMotorGauche.stop(true);
 			largeRegulatedMotorDroit.stop(true);
 			
 			tryLeft = !tryLeft;
 			tryRight = !tryRight ;
-		}
+		}*/
 	}
 	
 	public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException {
@@ -162,7 +164,8 @@ public class CurvedLineFollower
 		CurvedLineFollower curvedLineFollower = new CurvedLineFollower();
 		
 		// Learn the colors
-		Color.learnColors();
+		Color.getColorTo(curvedLineFollower.sampleProvider, true);
+		Color.getColorTo(curvedLineFollower.sampleProvider, false);
 		
 		// Click enter to start following
 		Button.ENTER.waitForPressAndRelease();
@@ -171,6 +174,7 @@ public class CurvedLineFollower
 		curvedLineFollower.lookForLine();
 		
 		long timeInBlack = 0,timeInWhite = 0;
+		float angle=0.4f;
 		
 		// While the brick is detecting
 		while(Button.ESCAPE.isUp()) {
@@ -184,27 +188,31 @@ public class CurvedLineFollower
 			String detectedColor = Color.getColor(curvedLineFollower.sampleRGBValue);
 			
 			// Print the detected color
+			LCD.clear();
 			LCD.drawString(detectedColor, 0, 1);
 			
-			if(detectedColor.equals(Color.COLOR_LIGHT_GREEN)) {
+			if(detectedColor.equals(Color.toFollow.getName())) {
 				if(timeInBlack == 0)
 					timeInBlack=System.currentTimeMillis();
 				else if((System.currentTimeMillis() - timeInBlack) > 500) {
-					curvedLineFollower.motorSpeed = 300;
-				}else if((System.currentTimeMillis() - timeInBlack) > 200) {
 					curvedLineFollower.motorSpeed = 400;
+					angle=0.3f;
+				}else if((System.currentTimeMillis() - timeInBlack) > 200) {
+					curvedLineFollower.motorSpeed = 350;
+					angle=0.35f;
 				}else {
-					curvedLineFollower.motorSpeed = 500;
+					curvedLineFollower.motorSpeed = 300;
+					angle=0.4f;
 				}
 				timeInWhite = 0;
 				curvedLineFollower.largeRegulatedMotorGauche.setSpeed(curvedLineFollower.motorSpeed);
-				curvedLineFollower.largeRegulatedMotorDroit.setSpeed((float) 0.35 * curvedLineFollower.motorSpeed);
+				curvedLineFollower.largeRegulatedMotorDroit.setSpeed((float) angle * curvedLineFollower.motorSpeed);
 			}
 			else {
 				if(timeInWhite == 0)
 					
 					timeInWhite = System.currentTimeMillis();
-				else if((System.currentTimeMillis() - timeInWhite) > 1500 && timeInWhite != 0 ) {
+				else if((System.currentTimeMillis() - timeInWhite) > 1900 && timeInWhite != 0 ) {
 					curvedLineFollower.largeRegulatedMotorDroit.stop();
 					curvedLineFollower.largeRegulatedMotorDroit.stop();
 					curvedLineFollower.lookForLine();
@@ -212,7 +220,7 @@ public class CurvedLineFollower
 				}
 				timeInBlack = 0;
 				
-				curvedLineFollower.largeRegulatedMotorGauche.setSpeed((float) 0.35 * curvedLineFollower.motorSpeed);
+				curvedLineFollower.largeRegulatedMotorGauche.setSpeed((float) angle * curvedLineFollower.motorSpeed);
 				curvedLineFollower.largeRegulatedMotorDroit.setSpeed(curvedLineFollower.motorSpeed);
 			}
 			
@@ -226,4 +234,6 @@ public class CurvedLineFollower
 		curvedLineFollower.largeRegulatedMotorGauche.close();
 		curvedLineFollower.largeRegulatedMotorDroit.close();
 	}
+	
+	
 }

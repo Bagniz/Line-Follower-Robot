@@ -1,16 +1,24 @@
 package curvedLineFollower;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+
+import lejos.hardware.Button;
+import lejos.hardware.lcd.LCD;
+import lejos.remote.ev3.RMISampleProvider;
 
 public class Color {
 	// Attributes
 	private String name;
 	private float[] rgbColorValues;
 	public static ArrayList<Color> learnedColors = new ArrayList<Color>();
+	
+	static Color toFollow,toAvoid;
+	
 	public final static String COLOR_BLACK = "Black";
     public final static String COLOR_WHITE = "White";
     public final static String COLOR_ORANGE = "Orange";
-    public final static String COLOR_LIGHT_GREEN = "Light Green";
+    public final static String COLOR_LIGHT_GREEN = "Green";
     public final static String COLOR_RED = "Red";
     public final static String COLOR_BROWN = "Brown";
     public final static String COLOR_OTHER = "Other";
@@ -45,10 +53,22 @@ public class Color {
 		String colorName = COLOR_OTHER;
 		double lowestDistance = 1000000;
 		
+		double calculatedDistance = getDistance(capturedRGBValues, toFollow.getRgbColorValues());
+		if(calculatedDistance < lowestDistance)
+		{
+			lowestDistance = calculatedDistance;
+			colorName = toFollow.getName();
+		}
+		calculatedDistance = getDistance(capturedRGBValues, toAvoid.getRgbColorValues());
+		if(calculatedDistance < lowestDistance)
+		{
+			lowestDistance = calculatedDistance;
+			colorName = toAvoid.getName();
+		}
 		// Calculate the distance between 
 		// the detected color and 
 		// the colors that we learned
-		for(Color learnedColor : learnedColors)
+		/*for(Color learnedColor : learnedColors)
 		{
 			// Calculate the distance
 			double calculatedDistance = getDistance(capturedRGBValues, learnedColor.rgbColorValues);
@@ -62,7 +82,7 @@ public class Color {
 				lowestDistance = calculatedDistance;
 				colorName = learnedColor.getName();
 			}
-		}
+		}*/
 		
 		// Return the name of the color detected
 		return colorName;
@@ -79,7 +99,7 @@ public class Color {
 	}
 	
 	// Learn the colors
-	public static void learnColors()
+	public static void learnColor()
 	{
 		float[] white = {61.74f, 63.75f, 35.39f};
 		float[] lightGreen = {17.32f, 50.20f, 6.27f};
@@ -97,5 +117,44 @@ public class Color {
 		learnedColors.add(new Color(COLOR_BROWN, brown));
 		learnedColors.add(new Color(COLOR_RED, red));
 		*/
+	}
+	static void getColorTo(RMISampleProvider sampleProvider,boolean toFoll) throws RemoteException {
+		// Variables
+		int buttonClicked;
+		float[] sampleRGBValue;
+		
+		LCD.clear();
+		if(toFoll)
+			LCD.drawString("Color to Follow", 0, 1);
+		else
+			LCD.drawString("Color to Avoid", 0, 1);
+
+		
+		while(true) {
+			// Wait for the button press
+			buttonClicked = Button.waitForAnyPress();
+			
+			// Is it the Enter button
+			if(buttonClicked == Button.ID_ENTER) {
+				// Detect a color and get the RGB values
+				sampleRGBValue = sampleProvider.fetchSample();
+				sampleRGBValue[0] = sampleRGBValue[0] * 256f;
+				sampleRGBValue[1] = sampleRGBValue[1] * 256f;
+				sampleRGBValue[2] = sampleRGBValue[2] * 256f;
+				
+				// Create the color to follow
+				LCD.drawString("Color detected", 0, 2);
+				if(toFoll)
+					Color.toFollow=new Color("toFollow", sampleRGBValue);
+				else
+					Color.toAvoid=new Color("toAvoid", sampleRGBValue);
+				break;
+			}
+			// Is it the escape button
+			else if(buttonClicked == Button.ID_ESCAPE) {
+				break;
+			}	
+		}
+		LCD.clear();
 	}
 }
