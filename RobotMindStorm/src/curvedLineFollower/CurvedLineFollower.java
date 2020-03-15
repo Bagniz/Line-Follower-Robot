@@ -20,7 +20,7 @@ public class CurvedLineFollower
 	RMISampleProvider sampleProvider;
 	EV3LargeRegulatedMotor largeRegulatedMotorGauche;
 	EV3LargeRegulatedMotor largeRegulatedMotorDroit;
-	
+	static Color toAvoidColor, toFollowColor;
 	
 	// Constructor
 	public CurvedLineFollower() throws RemoteException, MalformedURLException, NotBoundException {
@@ -56,12 +56,12 @@ public class CurvedLineFollower
 			this.sampleRGBValue[2] = this.sampleRGBValue[2] * 256f;
 					
 			// Get the name of the detected RGB value
-			detectedColorName = Color.getColor(this.sampleRGBValue);
+			detectedColorName = Color.getColor(this.sampleRGBValue, toAvoidColor, toFollowColor);
 					
 			// Print the detected color
 			LCD.drawString(detectedColorName, 0, 1);
 					
-			if(detectedColorName.equals(Color.toFollow.getName())) {
+			if(detectedColorName.equals(toFollowColor.getName())) {
 				largeRegulatedMotorDroit.stop(true);
 				largeRegulatedMotorGauche.stop(true);
 				break;
@@ -99,73 +99,36 @@ public class CurvedLineFollower
 			}
 		}
 		
-		Boolean tryLeft=false,tryRight =!tryLeft;
-		//for (int j = 0; j < 2;j++) {
 		while(Button.ESCAPE.isUp()) {	
-			if(tryLeft) {
-				largeRegulatedMotorGauche.setSpeed(motorSpeed);
-				largeRegulatedMotorGauche.backward();
-			}
-			else {
-				largeRegulatedMotorGauche.setSpeed(motorSpeed);
-				largeRegulatedMotorGauche.forward();
-			}
 			
-			if(tryRight ) {
-				largeRegulatedMotorDroit.setSpeed(motorSpeed);
-				largeRegulatedMotorDroit.backward(); 
-			}
-			else {
-				largeRegulatedMotorDroit.setSpeed(motorSpeed);
-				largeRegulatedMotorDroit.forward();
-			}
-			//Delay.msDelay(900);
+			largeRegulatedMotorGauche.setSpeed(motorSpeed);
+			largeRegulatedMotorGauche.forward();
+			largeRegulatedMotorDroit.setSpeed(motorSpeed);
+			largeRegulatedMotorDroit.backward();
+			
 			this.sampleRGBValue = sampleProvider.fetchSample();
 			this.sampleRGBValue[0] = this.sampleRGBValue[0]*256f;
 			this.sampleRGBValue[1] = this.sampleRGBValue[1]*256f;
 			this.sampleRGBValue[2] = this.sampleRGBValue[2]*256f;
-			detectedColorName = Color.getColor(this.sampleRGBValue);
+			detectedColorName = Color.getColor(this.sampleRGBValue, toAvoidColor, toFollowColor);
 			
-			if(detectedColorName.equals(Color.toAvoid.getName())) {
+			if(detectedColorName.equals(toAvoidColor.getName())) {
 				Delay.msDelay(300);
 				largeRegulatedMotorGauche.stop(true);
 				largeRegulatedMotorDroit.stop(true);
 				return;
 			}
 		}
-			/*
-			if(tryLeft) {
-				largeRegulatedMotorGauche.setSpeed(motorSpeed/5);
-				largeRegulatedMotorGauche.forward(); 	
-			}
-			else {
-				largeRegulatedMotorGauche.setSpeed(motorSpeed);
-				largeRegulatedMotorGauche.backward();
-			}
-			
-			if(tryRight ) {
-				largeRegulatedMotorDroit.setSpeed(motorSpeed/5);
-				largeRegulatedMotorDroit.forward(); 
-			}
-			else {
-				largeRegulatedMotorDroit.setSpeed(motorSpeed);
-				largeRegulatedMotorDroit.backward();
-			}
-			Delay.msDelay(1000);
-			largeRegulatedMotorGauche.stop(true);
-			largeRegulatedMotorDroit.stop(true);
-			
-			tryLeft = !tryLeft;
-			tryRight = !tryRight ;
-		}*/
 	}
 	
 	public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException {
 		// Instantiate the Brick
 		CurvedLineFollower curvedLineFollower = new CurvedLineFollower();
 		
-		// Learn the colors
+		// Learn the color to follow
 		Color.getColorTo(curvedLineFollower.sampleProvider, true);
+		
+		// Learn the color to avoid
 		Color.getColorTo(curvedLineFollower.sampleProvider, false);
 		
 		// Click enter to start following
@@ -186,13 +149,13 @@ public class CurvedLineFollower
 			curvedLineFollower.sampleRGBValue[2] = curvedLineFollower.sampleRGBValue[2]*256f;
 			
 			// Get the name of the detected RGB value
-			String detectedColor = Color.getColor(curvedLineFollower.sampleRGBValue);
+			String detectedColor = Color.getColor(curvedLineFollower.sampleRGBValue, toAvoidColor, toFollowColor);
 			
 			// Print the detected color
 			LCD.clear();
 			LCD.drawString(detectedColor, 0, 1);
 			
-			if(detectedColor.equals(Color.toFollow.getName())) {
+			if(detectedColor.equals(toFollowColor.getName())) {
 				if(timeInBlack == 0)
 					timeInBlack=System.currentTimeMillis();
 				else if((System.currentTimeMillis() - timeInBlack) > 500) {

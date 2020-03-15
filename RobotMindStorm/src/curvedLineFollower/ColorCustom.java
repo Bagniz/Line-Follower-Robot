@@ -5,7 +5,7 @@ import lejos.hardware.Button;
 import lejos.hardware.lcd.LCD;
 import lejos.remote.ev3.RMISampleProvider;
 
-public class Color {
+public class ColorCustom {
 	
 	// Attributes
 	private String name;
@@ -17,7 +17,7 @@ public class Color {
 	public final static String COLOR_OTHER = "Other";
 	
 	// Constructor
-	public Color(String colorName, float[] rgbColorValues){
+	public ColorCustom(String colorName, float[] rgbColorValues){
 		super();
 		this.name = colorName;
 		this.rgbColorValues = rgbColorValues;
@@ -41,7 +41,7 @@ public class Color {
     }
 	
 	// Get the name of the detected color
-	public static String getColor(float[] capturedRGBValues, Color toAvoidColor, Color toFollowColor)
+	public static String getColor(float[] capturedRGBValues, ColorCustom toAvoidColor, ColorCustom toFollowColor)
 	{
 		// Variables
 		String colorName = COLOR_OTHER;
@@ -104,9 +104,9 @@ public class Color {
 				// Create the color to follow
 				LCD.drawString("Color detected", 0, 2);
 				if(isToFollow)
-					CurvedLineFollower.toFollowColor = new Color(COLOR_FOLLOW, sampleRGBValue);
+					CurvedLineFollowerCustom.toFollowColor = new ColorCustom(COLOR_FOLLOW, sampleRGBValue);
 				else
-					CurvedLineFollower.toAvoidColor = new Color(COLOR_FOLLOW, sampleRGBValue);
+					CurvedLineFollowerCustom.toAvoidColor = new ColorCustom(COLOR_FOLLOW, sampleRGBValue);
 				break;
 			}
 			// Is it the escape button

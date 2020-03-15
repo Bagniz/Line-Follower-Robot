@@ -14,13 +14,12 @@ import lejos.utility.Delay;
 public class CurvedLineFollowerCustom {
 	
 	// Attributes
-	Color colorToFollow;
-	Color colorToAvoid;
 	float[] sampleRGBValue;
 	int motorSpeed;
 	RemoteEV3 ev3;
 	RMISampleProvider sampleProvider;
 	EV3LargeRegulatedMotor motorLeft, motorRight;
+	static ColorCustom toAvoidColor, toFollowColor;
 	
 	// Constructor
 	public CurvedLineFollowerCustom() throws RemoteException, MalformedURLException, NotBoundException {
@@ -41,115 +40,44 @@ public class CurvedLineFollowerCustom {
 		motorRight.setSpeed(motorSpeed);
 	}
 	
-	boolean getColorToFollow() throws RemoteException {
+	// Look for the line when lost
+	public void lookForLine(CurvedLineFollowerCustom curvedLineFollower) throws RemoteException {
 		// Variables
-		int buttonClicked;
-		
-		LCD.clear();
-		LCD.drawString("Color to follow", 0, 1);
-		
-		while(true) {
-			// Wait for the button press
-			buttonClicked = Button.waitForAnyPress();
-			
-			// Is it the Enter button
-			if(buttonClicked == Button.ID_ENTER) {
-				// Detect a color and get the RGB values
-				this.sampleRGBValue = this.sampleProvider.fetchSample();
-				this.sampleRGBValue[0] = this.sampleRGBValue[0] * 256f;
-				this.sampleRGBValue[1] = this.sampleRGBValue[1] * 256f;
-				this.sampleRGBValue[2] = this.sampleRGBValue[2] * 256f;
-				
-				// Create the color to follow
-				this.colorToFollow = new Color("ColorFollow", this.sampleRGBValue);
-				LCD.drawString("Color to follow detected", 0, 2);
-				
-				return true;
-			}
-			// Is it the escape button
-			else if(buttonClicked == Button.ID_ESCAPE) {
-				break;
-			}	
-		}
-		return false;
-	}
-	
-	boolean getColorToAvoid() throws RemoteException {
-		// Variables
-		int buttonClicked;
-		
-		LCD.clear();
-		LCD.drawString("Color to avoid", 0, 1);
-		
-		while(true) {
-			// Wait for the button press
-			buttonClicked = Button.waitForAnyPress();
-			
-			// Is it the Enter button
-			if(buttonClicked == Button.ID_ENTER) {
-				// Detect a color and get the RGB values
-				this.sampleRGBValue = this.sampleProvider.fetchSample();
-				this.sampleRGBValue[0] = this.sampleRGBValue[0] * 256f;
-				this.sampleRGBValue[1] = this.sampleRGBValue[1] * 256f;
-				this.sampleRGBValue[2] = this.sampleRGBValue[2] * 256f;
-				
-				// Create the color to follow
-				this.colorToAvoid = new Color("ColorAvoid", this.sampleRGBValue);
-				LCD.drawString("Color to avoid detected", 0, 2);
-				
-				return true;
-			}
-			// Is it the escape button
-			else if(buttonClicked == Button.ID_ESCAPE) {
-				break;
-			}	
-		}
-		return false;
-	}
-	
-	void lookForLine(CurvedLineFollowerCustom curvedLineFollower) throws RemoteException {
-		// Variables
+		String detectedColorName;
 		long timeTurning = 0;
-		int timeToSpeeUp = 3000;
-		double ditanceToFollow = 0, distanceToAvoid = 0;
-		float turnPercentWhite = 0.50f;
-		
-		// Detect a color and get the RGB values
-		sampleRGBValue = sampleProvider.fetchSample();
-		sampleRGBValue[0] = sampleRGBValue[0]*256f;
-		sampleRGBValue[1] = sampleRGBValue[1]*256f;
-		sampleRGBValue[2] = sampleRGBValue[2]*256f;
-		
-		// Calculate the distance
-		ditanceToFollow = Color.getDistance(sampleRGBValue, colorToFollow.getRgbColorValues());
-		distanceToAvoid = Color.getDistance(sampleRGBValue, colorToAvoid.getRgbColorValues());
+		int timeToSpeedUp = 3000;
+		float turnPercentAvoid = 0.50f;
 		
 		while(Button.ESCAPE.isUp()) {
+			
 			// Detect a color and get the RGB values
 			curvedLineFollower.sampleRGBValue = curvedLineFollower.sampleProvider.fetchSample();
 			curvedLineFollower.sampleRGBValue[0] = curvedLineFollower.sampleRGBValue[0]*256f;
 			curvedLineFollower.sampleRGBValue[1] = curvedLineFollower.sampleRGBValue[1]*256f;
 			curvedLineFollower.sampleRGBValue[2] = curvedLineFollower.sampleRGBValue[2]*256f;
 			
-			// Calculate the distance
-			ditanceToFollow = Color.getDistance(curvedLineFollower.sampleRGBValue, curvedLineFollower.colorToFollow.getRgbColorValues());
-			distanceToAvoid = Color.getDistance(curvedLineFollower.sampleRGBValue, curvedLineFollower.colorToAvoid.getRgbColorValues());
+			// Calculate the distances
+			detectedColorName = ColorCustom.getColor(curvedLineFollower.sampleRGBValue, toAvoidColor, toFollowColor);
 			
-			// Is is follow turn left
-			if(ditanceToFollow > distanceToAvoid) {
+			// Is it color to Avoid
+			if(detectedColorName.equals(ColorCustom.COLOR_AVOID)) {
 				if(timeTurning == 0)
 					timeTurning = System.currentTimeMillis();
-				motorLeft.setSpeed((float)(turnPercentWhite * motorSpeed));
+				motorLeft.setSpeed((float)(turnPercentAvoid * motorSpeed));
 				motorRight.setSpeed(motorSpeed);
 				
-				if(System.currentTimeMillis() - timeTurning > timeToSpeeUp) {
+				// Make the circle radius bigger
+				if(System.currentTimeMillis() - timeTurning > timeToSpeedUp) {
 					timeTurning = 0;
-					timeToSpeeUp += 2000;
-					turnPercentWhite += 0.10f;
+					timeToSpeedUp += 2000;
+					turnPercentAvoid += 0.10f;
 				}
 			}
-			// It is avoid turn right
+			// Is it color to Follow
 			else {
+				Delay.msDelay(300);
+				curvedLineFollower.motorLeft.stop(true);
+				curvedLineFollower.motorRight.stop(true);
 				return ;
 			}
 			
@@ -161,16 +89,18 @@ public class CurvedLineFollowerCustom {
 
 	public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException {
 		// Variables
-		double ditanceToFollow = 0, distanceToAvoid = 0;
-		float turnPercentBlack = 0.50f, turnPercentWhite = 0.50f;
+		String detectedColorName;
+		float turnAngle = 0.40f;
 		long timeInAvoidColor = 0;
 		
 		// Initialize the brick
 		CurvedLineFollowerCustom curvedLineFollower = new CurvedLineFollowerCustom();
 		
-		// Detect the color to follow & color to avoid
-		curvedLineFollower.getColorToFollow();
-		curvedLineFollower.getColorToAvoid();
+		// Learn the color to follow
+		ColorCustom.getColorTo(curvedLineFollower.sampleProvider, true);
+		
+		// Learn the color to avoid
+		ColorCustom.getColorTo(curvedLineFollower.sampleProvider, false);
 		
 		// Start following the line 
 		LCD.clear();
@@ -179,32 +109,33 @@ public class CurvedLineFollowerCustom {
 		
 		// While the brick is detecting
 		while(Button.ESCAPE.isUp()) {
+			
 			// Detect a color and get the RGB values
 			curvedLineFollower.sampleRGBValue = curvedLineFollower.sampleProvider.fetchSample();
 			curvedLineFollower.sampleRGBValue[0] = curvedLineFollower.sampleRGBValue[0]*256f;
 			curvedLineFollower.sampleRGBValue[1] = curvedLineFollower.sampleRGBValue[1]*256f;
 			curvedLineFollower.sampleRGBValue[2] = curvedLineFollower.sampleRGBValue[2]*256f;
 			
-			// Calculate the distance
-			ditanceToFollow = Color.getDistance(curvedLineFollower.sampleRGBValue, curvedLineFollower.colorToFollow.getRgbColorValues());
-			distanceToAvoid = Color.getDistance(curvedLineFollower.sampleRGBValue, curvedLineFollower.colorToAvoid.getRgbColorValues());
+			// Calculate the distances
+			detectedColorName = ColorCustom.getColor(curvedLineFollower.sampleRGBValue, toAvoidColor, toFollowColor);
 			
-			// Is is follow turn left
-			if(ditanceToFollow < distanceToAvoid) {
+			// Is it color to follow
+			if(detectedColorName.equals(ColorCustom.COLOR_FOLLOW)) {
 				timeInAvoidColor = 0;
 				curvedLineFollower.motorLeft.setSpeed(curvedLineFollower.motorSpeed);
-				curvedLineFollower.motorRight.setSpeed((float)(turnPercentBlack * curvedLineFollower.motorSpeed));
+				curvedLineFollower.motorRight.setSpeed((float)(turnAngle * curvedLineFollower.motorSpeed));
 			}
-			// It is avoid turn right
+			// Is it color to avoid
 			else {
 				if(timeInAvoidColor == 0)
 					// Start calculating time in avoid color
 					timeInAvoidColor = System.currentTimeMillis();
 				
-				curvedLineFollower.motorLeft.setSpeed((float)(turnPercentWhite * curvedLineFollower.motorSpeed));
+				curvedLineFollower.motorLeft.setSpeed((float)(turnAngle * curvedLineFollower.motorSpeed));
 				curvedLineFollower.motorRight.setSpeed(curvedLineFollower.motorSpeed);
-			
+				
 				// If time is big than we search for line
+				// The machine is lost
 				if(System.currentTimeMillis() - timeInAvoidColor > 3000) {
 					timeInAvoidColor = 0;
 					curvedLineFollower.lookForLine(curvedLineFollower);
