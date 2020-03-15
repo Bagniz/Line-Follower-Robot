@@ -75,6 +75,10 @@ public class CurvedLineFollowerCustom {
 			}
 			// Is it color to Follow
 			else {
+				curvedLineFollower.motorLeft.setSpeed(motorSpeed);
+				curvedLineFollower.motorLeft.forward();
+				curvedLineFollower.motorRight.setSpeed(motorSpeed);
+				curvedLineFollower.motorRight.backward();
 				Delay.msDelay(300);
 				curvedLineFollower.motorLeft.stop(true);
 				curvedLineFollower.motorRight.stop(true);
